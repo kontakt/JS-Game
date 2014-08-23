@@ -29,6 +29,7 @@
 		controls = new THREE.OrbitControls( camera );
 		controls.damping = 0.2;
 		controls.addEventListener( 'change', render );
+		controls.maxDistance = 1e4;
 		
 		var light = new THREE.PointLight( 0xff0000, 1, 0 ); 
 		light.position.set( -1e5, 50, 0 ); 
