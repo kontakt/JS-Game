@@ -2,13 +2,26 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Testing Grounds</title>
+<title>Version 0.0</title>
+
+<!-- Basic Engine --> 
 <script src="js/three.js"></script>
+
+<!-- Camera Controls --> 
 <script src="js/OrbitControls.js"></script>
+
 </head>
 
 <body>
 <script>
+	/* TODO
+	 * 1. Build Ships js file
+	 * 2. Work out sighting mechanism
+	 * 3. Physics
+	 * 4. Timing events
+	 * 5. Break code into more js files
+	 */
+
 	// GLOBALS
 	// Declaring basic vars
     var scene, camera, renderer;
@@ -148,6 +161,11 @@
         // Add the renderer to the HTML 
         document.body.appendChild( renderer.domElement );
         
+        //// LISTENERS ////
+        // Dynamic window resizing
+        window.addEventListener( 'resize', onWindowResize, false );
+
+        
     }
     
 
@@ -170,6 +188,14 @@
     	renderer.render( scene, camera );
     }
 	
+	// Dynamically resizes the window based on current dimensions
+	function onWindowResize() {
+
+	    camera.aspect = window.innerWidth / window.innerHeight;
+	    camera.updateProjectionMatrix();
+	
+	    renderer.setSize( (window.innerWidth-25), (window.innerHeight-25) );
+	}
 </script>
 
 </body>
