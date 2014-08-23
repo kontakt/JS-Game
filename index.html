@@ -10,6 +10,9 @@
 <!-- Camera Controls --> 
 <script src="js/OrbitControls.js"></script>
 
+<!-- Stars --> 
+<script src="js/Stars.js"></script>
+
 </head>
 
 <body>
@@ -19,7 +22,6 @@
 	 * 2. Work out sighting mechanism
 	 * 3. Physics
 	 * 4. Timing events
-	 * 5. Break code into more js files
 	 */
 
 	// GLOBALS
@@ -70,84 +72,37 @@
         var base 		= new THREE.SphereGeometry( 5000, 16, 16);
         var geometry	= new THREE.Geometry();
 		
+		//// SCENE ITEMS ////
 		// Sun
 		sun = new THREE.Mesh( base, material);
 		scene.add( sun );
 		sun.position.x = -1e5;		
 		
-		// Stars
-		var i, r = 1000, starsGeometry = [ new THREE.Geometry(), new THREE.Geometry() ];
-
-		for ( i = 0; i < 250; i ++ ) {
-
-			var vertex = new THREE.Vector3();
-			vertex.x = Math.random() * 2 - 1;
-			vertex.y = Math.random() * 2 - 1;
-			vertex.z = Math.random() * 2 - 1;
-			vertex.multiplyScalar( r );
-
-			starsGeometry[ 0 ].vertices.push( vertex );
-
-		}
-
-		for ( i = 0; i < 1500; i ++ ) {
-
-			var vertex = new THREE.Vector3();
-			vertex.x = Math.random() * 2 - 1;
-			vertex.y = Math.random() * 2 - 1;
-			vertex.z = Math.random() * 2 - 1;
-			vertex.multiplyScalar( r );
-
-			starsGeometry[ 1 ].vertices.push( vertex );
-
-		}
-
-		var stars;
-		var starsMaterials = [
-			new THREE.PointCloudMaterial( { color: 0x555555, size: 2, sizeAttenuation: false } ),
-			new THREE.PointCloudMaterial( { color: 0x555555, size: 1, sizeAttenuation: false } ),
-			new THREE.PointCloudMaterial( { color: 0x333333, size: 2, sizeAttenuation: false } ),
-			new THREE.PointCloudMaterial( { color: 0x3a3a3a, size: 1, sizeAttenuation: false } ),
-			new THREE.PointCloudMaterial( { color: 0x1a1a1a, size: 2, sizeAttenuation: false } ),
-			new THREE.PointCloudMaterial( { color: 0x1a1a1a, size: 1, sizeAttenuation: false } )
-		];
-
-		for ( i = 10; i < 30; i ++ ) {
-
-			stars = new THREE.PointCloud( starsGeometry[ i % 2 ], starsMaterials[ i % 6 ] );
-
-			stars.rotation.x = Math.random() * 6;
-			stars.rotation.y = Math.random() * 6;
-			stars.rotation.z = Math.random() * 6;
-
-			s = i * 10;
-			stars.scale.set( s, s, s );
-
-			stars.matrixAutoUpdate = false;
-			stars.updateMatrix();
-
-			scene.add( stars );
-
-		}
+		// Add the stars
+		addStars();
 		
+		// Planet sphere
 		sphere = new THREE.Mesh( ball, material2);
 		scene.add(sphere);
 		sphere.position.x = 10;
 		sphere.position.y = 50;
 		sphere.position.z = 130;
-
+		
+		// Big cube
         cube1 = new THREE.Mesh( box, material );
         scene.add( cube1 );
         cube1.position.x = -100;
 		cube1.position.y = -10;
 		cube1.position.z = -90;
         
+        // Little cube
         cube2 = new THREE.Mesh( box2, material );
         scene.add( cube2 );
         cube2.position.x = 100;
 		cube2.position.y = 30;
 		cube2.position.z = 70;
 		
+		// Line between cubes
 		geometry.vertices.push(new THREE.Vector3(-100, -10, -90));
     	geometry.vertices.push(new THREE.Vector3(100, 30, 70));
     	line = new THREE.Line(geometry, material2);
@@ -171,13 +126,17 @@
 
     // All actions involving a visual change occur here
     function animate() {
-
+		
+		// Looping animation
         requestAnimationFrame( animate );
 		
+		// Give the planet some spin
         sphere.rotation.y += 0.001;     
         
+        // Deletes line between cubes
         scene.remove( line );
 		
+		// Render the scene
         render();
         
     }
