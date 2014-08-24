@@ -13,6 +13,8 @@
 <!-- Stars --> 
 <script src="js/Stars.js"></script>
 
+<script src='js/THREEx.KeyboardState.js'></script>
+
 </head>
 
 <body>
@@ -24,7 +26,10 @@
 	 * 4. Timing events
 	 */
 
-	// GLOBALS
+	// Debugging 
+	var DEBUG = true;
+	
+	//// GLOBALS ////
 	// Declaring basic vars
     var scene, camera, renderer;
     var line;
@@ -37,6 +42,8 @@
     animate();
 
     function init() {
+    	
+    	if (DEBUG) console.log("init start");
 		
 		//// SCENE ////
 		// Create the scene
@@ -61,7 +68,7 @@
 		
 		//// MATERIALS ////
 		var material 	= new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe: true } );
-        var material2 	= new THREE.MeshLambertMaterial( { color: 0xff0000 } );
+        var material2 	= new THREE.MeshLambertMaterial( { color: 0xffffff } );
         var material3 	= new THREE.LineBasicMaterial( { color: 0x0000ff } );
     
 		
@@ -102,11 +109,7 @@
 		cube2.position.y = 30;
 		cube2.position.z = 70;
 		
-		// Line between cubes
-		geometry.vertices.push(new THREE.Vector3(-100, -10, -90));
-    	geometry.vertices.push(new THREE.Vector3(100, 30, 70));
-    	line = new THREE.Line(geometry, material2);
-    	scene.add(line);
+		
 		
 		//// RENDERER ////
 		// Creates the render object, WebGL with antialiasing
@@ -119,22 +122,26 @@
         //// LISTENERS ////
         // Dynamic window resizing
         window.addEventListener( 'resize', onWindowResize, false );
-
         
+        keyboard = new THREEx.KeyboardState();
+        
+                
     }
     
-
+	function fire(){
+		 if (DEBUG) console.log("Pressed the key Z");    			
+	}
+	
     // All actions involving a visual change occur here
     function animate() {
+		
+		if( keyboard.pressed("Z") ) fire();
 		
 		// Looping animation
         requestAnimationFrame( animate );
 		
 		// Give the planet some spin
         sphere.rotation.y += 0.001;     
-        
-        // Deletes line between cubes
-        scene.remove( line );
 		
 		// Render the scene
         render();
@@ -143,7 +150,6 @@
     
     // Renders the scene after animate() is through
     function render() {
-    	
     	renderer.render( scene, camera );
     }
 	
@@ -154,6 +160,7 @@
 	    camera.updateProjectionMatrix();
 	
 	    renderer.setSize( (window.innerWidth-25), (window.innerHeight-25) );
+	    if (DEBUG) console.log("Window resized");
 	}
 </script>
 
