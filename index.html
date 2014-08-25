@@ -16,6 +16,9 @@
 <!-- Keyboard Controls -->
 <script src='js/THREEx.KeyboardState.js'></script>
 
+<!-- Engine -->
+<script src='js/Engine.js'></script>
+
 </head>
 
 <body>
@@ -26,6 +29,13 @@
 	 * 3. Physics
 	 * 4. Timing events
 	 */
+
+	// Make sure workers will work
+	if(typeof(Worker) !== "undefined") {
+   	var worker = true;
+	} else {
+    var worker = false;
+	} 
 
 	// Debugging 
 	var DEBUG = true;
@@ -43,7 +53,7 @@
 
     function init() {
     	
-    	if (DEBUG) console.log("init start");
+    	if (DEBUG) console.log("Init start");
 		
 		//// SCENE ////
 		// Create the scene
@@ -109,8 +119,6 @@
 		cube2.position.y = 30;
 		cube2.position.z = 70;
 		
-		
-		
 		//// RENDERER ////
 		// Creates the render object, WebGL with antialiasing
         renderer = new THREE.WebGLRenderer({antialias:true});
@@ -125,9 +133,25 @@
         
         keyboard = new THREEx.KeyboardState();
         
+        update();
+        
+        if (DEBUG) console.log("Init complete");
                 
     }
     
+    // Update function to keep physics rolling
+    function update(){
+    			
+    	//Push the small cube 
+		cube2.position.x++;
+		
+		// Give the planet some spin
+        sphere.rotation.y += 0.001;
+        
+		setTimeout("update()",16);
+	}
+
+
 	function fire(){
 		 if (DEBUG) console.log("Pressed the key Z");    			
 	}
@@ -139,9 +163,6 @@
 		
 		// Looping animation
         requestAnimationFrame( animate );
-		
-		// Give the planet some spin
-        sphere.rotation.y += 0.001;     
 		
 		// Render the scene
         render();
@@ -165,6 +186,4 @@
 </script>
 
 </body>
-
-
 </html>

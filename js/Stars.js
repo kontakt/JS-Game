@@ -51,6 +51,7 @@ function addStars() {
 			stars.updateMatrix();
 
 			scene.add( stars );
+			if (DEBUG) console.log("Stars added");
 
 		}
 	}
