@@ -119,9 +119,15 @@
 		cube2.position.y = 30;
 		cube2.position.z = 70;
 		
+		// Adds another vector to cube2
+        cube2.velocity = new THREE.Vector3(
+		  0.5,              // x
+		  0, 				// y
+		  0);             	// z
+		
 		//// RENDERER ////
 		// Creates the render object, WebGL with antialiasing
-        renderer = new THREE.WebGLRenderer({antialias:true});
+        renderer = new THREE.WebGLRenderer({antialias:true, logarithmicDepthBuffer: scene});
         renderer.setSize( (window.innerWidth-25), (window.innerHeight-25) );
         
         // Add the renderer to the HTML 
@@ -132,7 +138,7 @@
         window.addEventListener( 'resize', onWindowResize, false );
         
         keyboard = new THREEx.KeyboardState();
-        
+         
         update();
         
         if (DEBUG) console.log("Init complete");
@@ -141,9 +147,11 @@
     
     // Update function to keep physics rolling
     function update(){
+    	
+    	if( keyboard.pressed("Z") ) fire();
     			
     	//Push the small cube 
-		cube2.position.x++;
+		cube2.position.add(cube2.velocity);
 		
 		// Give the planet some spin
         sphere.rotation.y += 0.001;
@@ -158,9 +166,7 @@
 	
     // All actions involving a visual change occur here
     function animate() {
-		
-		if( keyboard.pressed("Z") ) fire();
-		
+			
 		// Looping animation
         requestAnimationFrame( animate );
 		
