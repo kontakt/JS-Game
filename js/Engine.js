@@ -18,6 +18,7 @@ function physAdd(object){
 	object.velocity 	= new THREE.Vector3(0, 0, 0);
 	object.acceleration = new THREE.Vector3(0, 0, 0);
 	object.spin 		= new THREE.Vector3(0, 0, 0);
+	object.mass			= 0;
 	
 	// Add to the array
 	physArray.push(object);
@@ -58,6 +59,11 @@ function physPosition(object, delta){
 	object.rotation.x += object.spin.x * delta; 
 	object.rotation.y += object.spin.y * delta; 
 	object.rotation.z += object.spin.z * delta; 
+}
+
+// Calculates the gravitational pull between two objects 
+function physGravity(object, object){
+	
 }
 
 //// Utilities ////

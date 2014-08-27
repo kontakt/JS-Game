@@ -23,6 +23,9 @@
 </head>
 
 <body>
+	<div id="infobutton">
+			<a href=""><img src="res/i.png" border="0"></a>
+		</div>
 <script>
 
 	/* TODO
@@ -138,7 +141,7 @@
 		
 		//// RENDERER ////
 		// Creates the render object, WebGL with antialiasing
-        renderer = new THREE.WebGLRenderer({antialias:true, logarithmicDepthBuffer: scene});
+        renderer = new THREE.WebGLRenderer( {antialias:true, logarithmicDepthBuffer: scene} );
         renderer.setSize( window.innerWidth, window.innerHeight );
         
         // Add the renderer to the HTML 
@@ -148,7 +151,7 @@
         // Dynamic window resizing
         window.addEventListener( 'resize', onWindowResize, false );
         // Fullscreen
-        addEventListener("click", function() {
+        addEventListener("keypress", function( p ) {
 		    var el = document.documentElement
 		        , rfs =
 		               el.requestFullScreen
