@@ -59,3 +59,5 @@ function physPosition(object, delta){
 	object.rotation.y += object.spin.y * delta; 
 	object.rotation.z += object.spin.z * delta; 
 }
+
+//// Utilities ////

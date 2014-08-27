@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Version 0.0</title>
+<link rel="stylesheet" type="text/css" href="index.css">
 
 <!-- Three.js Engine --> 
 <script src="js/three.js"></script>
@@ -23,6 +24,7 @@
 
 <body>
 <script>
+
 	/* TODO
 	 * 1. Build Ships js file
 	 * 2. Work out sighting mechanism
@@ -43,9 +45,8 @@
 	//// GLOBALS ////
 	// Declaring basic vars
     var scene, camera, renderer;
-    var line;
+	var fullscreen = false;
 	var clock1 = new THREE.Clock();
-	var clock2 = new THREE.Clock();
   	
   	//// INITIALIZATION ////
   	// Function calls to start the program
@@ -138,7 +139,7 @@
 		//// RENDERER ////
 		// Creates the render object, WebGL with antialiasing
         renderer = new THREE.WebGLRenderer({antialias:true, logarithmicDepthBuffer: scene});
-        renderer.setSize( (window.innerWidth-25), (window.innerHeight-25) );
+        renderer.setSize( window.innerWidth, window.innerHeight );
         
         // Add the renderer to the HTML 
         document.body.appendChild( renderer.domElement );
@@ -146,18 +147,26 @@
         //// LISTENERS ////
         // Dynamic window resizing
         window.addEventListener( 'resize', onWindowResize, false );
+        // Fullscreen
+        addEventListener("click", function() {
+		    var el = document.documentElement
+		        , rfs =
+		               el.requestFullScreen
+		            || el.webkitRequestFullScreen
+		            || el.mozRequestFullScreen
+		    ;
+		    rfs.call(el);
+		});
         
         keyboard = new THREEx.KeyboardState();
          
         update();
         
         if (DEBUG) console.log("Init complete");
-        if (DEBUG) console.log(clock2.getDelta());                
     }
     
     // Update function to keep physics rolling
     function update(){
-    	var time = clock1.getElapsedTime();
     	if( keyboard.pressed("Z") ) fire();
     	physUpdate();
 
@@ -190,8 +199,7 @@
 
 	    camera.aspect = window.innerWidth / window.innerHeight;
 	    camera.updateProjectionMatrix();
-	
-	    renderer.setSize( (window.innerWidth-25), (window.innerHeight-25) );
+		renderer.setSize( window.innerWidth, window.innerHeight );
 	    if (DEBUG) console.log("Window resized");
 	}
 </script>
