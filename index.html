@@ -14,46 +14,31 @@
 <!-- Stars --> 
 <script src="js/Stars.js"></script>
 
-<!-- Keyboard Controls -->
-<script src='js/THREEx.KeyboardState.js'></script>
-
 <!-- Custom Engine Extensions -->
 <script src='js/Engine.js'></script>
+
+<!-- Framerate Monitoring -->
+<script src='js/Stats.js'></script>
 
 </head>
 
 <body>
-	<div id="infobutton">
-			<a href=""><img src="res/i.png" border="0"></a>
+	<div id="statsbutton" >
+			<img src="res/i.png" border="0">
 		</div>
-<script>
-
-	/* TODO
-	 * 1. Build Ships js file
-	 * 2. Work out sighting mechanism
-	 * 3. Physics
-	 * 4. Timing events
-	 */
-
-	// Make sure workers will work
-	if(typeof(Worker) !== "undefined") {
-   	var worker = true;
-	} else {
-    var worker = false;
-	} 
-
-	// Debugging 
-	var DEBUG = true;
-	
+<script>	
 	//// GLOBALS ////
 	// Declaring basic vars
     var scene, camera, renderer;
 	var fullscreen = false;
 	var clock1 = new THREE.Clock();
+	var statsOn = true;
+	
+	// Debugging 
+	var DEBUG = true;
   	
   	//// INITIALIZATION ////
   	// Function calls to start the program
-  	
     init();
     animate();
 
@@ -62,6 +47,21 @@
     	if (DEBUG) console.debug("Init start");
     	
     	clock1.start();
+    	
+    	//// STATS ////
+    	statsInit();
+    	statsbutton.onclick=function(){
+    		if(statsOn){
+	    		stats.domElement.style.visibility = 'hidden';
+	    		physStats.domElement.style.visibility = 'hidden';
+	    		statsOn = false;
+	    	}
+	    	else{
+	    		stats.domElement.style.visibility = 'visible';
+	    		physStats.domElement.style.visibility = 'visible';
+	    		statsOn = true;
+	    	}
+    		};
     	
     	//// ENGINE ////
     	physInit();
@@ -166,9 +166,7 @@
 		    ;
 		    rfs.call(el);
 		});
-        
-        keyboard = new THREEx.KeyboardState();
-         
+               
         update();
         
         if (DEBUG) console.debug("Init complete");
@@ -176,41 +174,28 @@
     
     // Update function to keep physics rolling
     function update(){
-    	if( keyboard.pressed("Z") ) fire();
     	physUpdate();
-
-		setTimeout("update()",16);
-	}
-
-	// Fires off a command when a key is pressed
-	function fire(){
-		 if (DEBUG) console.debug("Pressed the key Z");    			
+		setTimeout("update()",10);
 	}
 	
     // All actions involving a visual change occur here
     function animate() {
-			
+		stats.begin();	
+		
 		// Looping animation
         requestAnimationFrame( animate );
 		
 		// Render the scene
         render();
         
+        stats.end();
     }
     
     // Renders the scene after animate() is through
     function render() {
     	renderer.render( scene, camera );
     }
-	
-	// Dynamically resizes the window based on current dimensions
-	function onWindowResize() {
-
-	    camera.aspect = window.innerWidth / window.innerHeight;
-	    camera.updateProjectionMatrix();
-		renderer.setSize( window.innerWidth, window.innerHeight );
-	    if (DEBUG) console.debug("Window resized");
-	}
+    	
 </script>
 
 </body>

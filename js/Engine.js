@@ -31,6 +31,7 @@ function physAdd(object){
 
 // Steps all physics objects
 function physUpdate(){
+	physStats.begin();
 	
 	// Get time since last update
 	var delta = physClock.getDelta();
@@ -46,6 +47,8 @@ function physUpdate(){
 	for (i = 0; i < physArray.length; i++){
 		physPosition(physArray[i], delta);	
 	}
+	
+	physStats.end();
 }
 
 // Returns a vector3 with time adjusted movement
@@ -96,3 +99,31 @@ function distanceFunction(a, b){
 	return Math.pow(a.position.x - b.position.x, 2) +  Math.pow(a.position.y - b.position.y, 2) +  Math.pow(a.position.z - b.position.z, 2);
 }
 
+// Dynamically resizes the window based on current dimensions
+function onWindowResize() {
+
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+	renderer.setSize( window.innerWidth, window.innerHeight );
+    if (DEBUG) console.debug("Window resized");
+}
+	
+// Initializes stats
+function statsInit(){
+	stats = new Stats();
+	stats.setMode(0); // 0: fps, 1: ms
+	
+	physStats = new Stats();
+	physStats.setMode(0); // 0: fps, 1: ms
+		
+	stats.domElement.style.position = 'absolute';
+	stats.domElement.style.left = '0px';
+	stats.domElement.style.top = '0px';
+	
+	physStats.domElement.style.position = 'absolute';
+	physStats.domElement.style.left = '0px';
+	physStats.domElement.style.top = '50px';
+
+	document.body.appendChild( stats.domElement );
+	document.body.appendChild( physStats.domElement );
+}
