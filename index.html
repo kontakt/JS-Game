@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <title>Version 0.0</title>
 
-<!-- Basic Engine --> 
+<!-- Three.js Engine --> 
 <script src="js/three.js"></script>
 
 <!-- Camera Controls --> 
@@ -16,7 +16,7 @@
 <!-- Keyboard Controls -->
 <script src='js/THREEx.KeyboardState.js'></script>
 
-<!-- Engine -->
+<!-- Custom Engine Extensions -->
 <script src='js/Engine.js'></script>
 
 </head>
@@ -44,17 +44,24 @@
 	// Declaring basic vars
     var scene, camera, renderer;
     var line;
-	var clock = new THREE.Clock();
+	var clock1 = new THREE.Clock();
+	var clock2 = new THREE.Clock();
   	
   	//// INITIALIZATION ////
   	// Function calls to start the program
+  	
     init();
     animate();
 
     function init() {
     	
     	if (DEBUG) console.log("Init start");
-		
+    	
+    	clock1.start();
+    	
+    	//// ENGINE ////
+    	physInit();
+    			
 		//// SCENE ////
 		// Create the scene
         scene = new THREE.Scene();
@@ -119,11 +126,14 @@
 		cube2.position.y = 30;
 		cube2.position.z = 70;
 		
-		// Adds another vector to cube2
-        cube2.velocity = new THREE.Vector3(
-		  0.5,              // x
-		  0, 				// y
-		  0);             	// z
+		physAdd(cube2);
+		cube2.velocity.x = 100;
+		cube2.acceleration.x = -5;
+		cube2.spin.y += 0.1;
+		cube2.spin.x += 0.2;
+		
+		physAdd(sphere);
+		sphere.spin.y += 0.01;
 		
 		//// RENDERER ////
 		// Creates the render object, WebGL with antialiasing
@@ -142,24 +152,19 @@
         update();
         
         if (DEBUG) console.log("Init complete");
-                
+        if (DEBUG) console.log(clock2.getDelta());                
     }
     
     // Update function to keep physics rolling
     function update(){
-    	
+    	var time = clock1.getElapsedTime();
     	if( keyboard.pressed("Z") ) fire();
-    			
-    	//Push the small cube 
-		cube2.position.add(cube2.velocity);
-		
-		// Give the planet some spin
-        sphere.rotation.y += 0.001;
-        
+    	physUpdate();
+
 		setTimeout("update()",16);
 	}
 
-
+	// Fires off a command when a key is pressed
 	function fire(){
 		 if (DEBUG) console.log("Pressed the key Z");    			
 	}
