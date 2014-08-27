@@ -59,7 +59,7 @@
 
     function init() {
     	
-    	if (DEBUG) console.log("Init start");
+    	if (DEBUG) console.debug("Init start");
     	
     	clock1.start();
     	
@@ -171,7 +171,7 @@
          
         update();
         
-        if (DEBUG) console.log("Init complete");
+        if (DEBUG) console.debug("Init complete");
     }
     
     // Update function to keep physics rolling
@@ -184,7 +184,7 @@
 
 	// Fires off a command when a key is pressed
 	function fire(){
-		 if (DEBUG) console.log("Pressed the key Z");    			
+		 if (DEBUG) console.debug("Pressed the key Z");    			
 	}
 	
     // All actions involving a visual change occur here
@@ -209,7 +209,7 @@
 	    camera.aspect = window.innerWidth / window.innerHeight;
 	    camera.updateProjectionMatrix();
 		renderer.setSize( window.innerWidth, window.innerHeight );
-	    if (DEBUG) console.log("Window resized");
+	    if (DEBUG) console.debug("Window resized");
 	}
 </script>
 
