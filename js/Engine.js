@@ -34,6 +34,7 @@ function physUpdate(){
 	for (i = 0; i < physArray.length; i++){
 		physPosition(physArray[i], delta);	
 	}
+	physGravity(physArray[0], physArray[2]);
 }
 
 // Returns a vector3 with time adjusted movement
@@ -62,8 +63,20 @@ function physPosition(object, delta){
 }
 
 // Calculates the gravitational pull between two objects 
-function physGravity(object, object){
-	
+function physGravity(a, b){
+	var r = distanceFunction(a, b);
+	var A = (6.674e-11)*(b.mass)/(r);
+	var grav = new THREE.Vector3(0, 0, 0);
+	grav = grav.subVectors(a.position, b.position);
+	grav = grav.normalize();
+	grav.multiplyScalar(-1 * A);
+	a.acceleration = grav;
 }
 
 //// Utilities ////
+
+// Calculates the distance between two objects
+function distanceFunction(a, b){
+	return Math.pow(a.position.x - b.position.x, 2) +  Math.pow(a.position.y - b.position.y, 2) +  Math.pow(a.position.z - b.position.z, 2);
+}
+
