@@ -31,7 +31,6 @@ function physAdd(object){
 
 // Steps all physics objects
 function physUpdate(){
-	physStats.begin();
 	
 	// Get time since last update
 	var delta = physClock.getDelta();
@@ -47,8 +46,7 @@ function physUpdate(){
 	for (i = 0; i < physArray.length; i++){
 		physPosition(physArray[i], delta);	
 	}
-	
-	physStats.end();
+	physStats.update();
 }
 
 // Returns a vector3 with time adjusted movement
@@ -90,6 +88,16 @@ function physGravity(a, b){
 	grav = grav.normalize();
 	grav.multiplyScalar(-A);
 	a.gravity = grav;
+}
+
+//// LINES ////
+function drawLine(){
+		dot = new THREE.Mesh( point, material);
+		scene.add( dot );
+		dot.position.x = cube1.position.x;
+		dot.position.y = cube1.position.y;
+		dot.position.z = cube1.position.z;
+		setTimeout("drawLine()",1000);
 }
 
 //// Utilities ////

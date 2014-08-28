@@ -88,15 +88,15 @@
 		scene.add( light );
 		
 		//// MATERIALS ////
-		var material 	= new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe: true } );
+			material 	= new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe: true } );
         var material2 	= new THREE.MeshLambertMaterial( { color: 0xffffff } );
-        var material3 	= new THREE.LineBasicMaterial( { color: 0x0000ff } );
-    
+        var material3 	= new THREE.LineBasicMaterial( { color: 0x0000ff } );    
 		
 		//// GEOMETRIES ////
         var box			= new THREE.BoxGeometry( 10, 10, 10 );
         var box2 		= new THREE.BoxGeometry( 1, 1, 1 );
         var ball 		= new THREE.SphereGeometry( 25, 16, 16);
+        	point 		= new THREE.SphereGeometry( 2, 16, 16);
         var base 		= new THREE.SphereGeometry( 5000, 16, 16);
         var geometry	= new THREE.Geometry();
 		
@@ -166,9 +166,8 @@
 		    ;
 		    rfs.call(el);
 		});
-               
-        update();
-        
+        drawLine();       
+        update();      
         if (DEBUG) console.debug("Init complete");
     }
     
@@ -179,16 +178,14 @@
 	}
 	
     // All actions involving a visual change occur here
-    function animate() {
-		stats.begin();	
+    function animate() {	
 		
 		// Looping animation
         requestAnimationFrame( animate );
 		
 		// Render the scene
         render();
-        
-        stats.end();
+        stats.update();
     }
     
     // Renders the scene after animate() is through
