@@ -88,21 +88,22 @@
 		scene.add( light );
 		
 		//// MATERIALS ////
-			material 	= new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe: true } );
-        var material2 	= new THREE.MeshLambertMaterial( { color: 0xffffff } );
-        var material3 	= new THREE.LineBasicMaterial( { color: 0x0000ff } );    
+			material 	= new THREE.MeshBasicMaterial	( { color: 0x19FF19, wireframe: true } );	
+        var material2 	= new THREE.MeshLambertMaterial	( { color: 0xffffff } );
+        var material3 	= new THREE.LineBasicMaterial	( { color: 0x0000ff } );
+        var	material4 	= new THREE.MeshBasicMaterial	( { color: 0xff0000, wireframe: true } );    
 		
 		//// GEOMETRIES ////
         var box			= new THREE.BoxGeometry( 10, 10, 10 );
         var box2 		= new THREE.BoxGeometry( 1, 1, 1 );
         var ball 		= new THREE.SphereGeometry( 25, 16, 16);
-        	point 		= new THREE.SphereGeometry( 2, 16, 16);
+        	point 		= new THREE.SphereGeometry( 1, 1, 1);
         var base 		= new THREE.SphereGeometry( 5000, 16, 16);
         var geometry	= new THREE.Geometry();
 		
 		//// SCENE ITEMS ////
 		// Sun
-		sun = new THREE.Mesh( base, material);
+		sun = new THREE.Mesh( base, material4);
 		scene.add( sun );
 		sun.position.x = -1e5;		
 		
@@ -117,14 +118,14 @@
 		sphere.position.z = 130;
 		
 		// Big cube
-        cube1 = new THREE.Mesh( box, material );
+        cube1 = new THREE.Mesh( box, material4 );
         scene.add( cube1 );
         cube1.position.x = -100;
 		cube1.position.y = -10;
 		cube1.position.z = -90;
         
         // Little cube
-        cube2 = new THREE.Mesh( box2, material );
+        cube2 = new THREE.Mesh( box2, material4 );
         scene.add( cube2 );
         cube2.position.x = 100;
 		cube2.position.y = 30;
@@ -132,7 +133,7 @@
 		
 		physAdd(cube1);
 		cube1.mass = 10000;
-		cube1.velocity.x = 10;
+		cube1.velocity.x = 15;
 		
 		physAdd(cube2);
 		cube2.velocity.x = 100;

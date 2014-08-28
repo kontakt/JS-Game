@@ -81,10 +81,10 @@ function physPosition(object, delta){
 
 // Calculates the gravitational pull between two objects 
 function physGravity(a, b){
-	var r = distanceFunction(a, b);
-	var A = (G)*(b.mass)/(r);
 	var grav = new THREE.Vector3(0, 0, 0);
 	grav = grav.subVectors(a.position, b.position);
+	var r = grav.lengthSq();
+	var A = (G)*(b.mass)/(r);
 	grav = grav.normalize();
 	grav.multiplyScalar(-A);
 	a.gravity = grav;
