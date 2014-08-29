@@ -22,26 +22,27 @@
 
 </head>
 
-<body>
-	<div id="statsbutton" >
-			<img src="res/i.png" border="0">
-		</div>
 <script>	
 	//// GLOBALS ////
 	// Declaring basic vars
     var scene, camera, renderer;
 	var fullscreen = false;
-	var clock1 = new THREE.Clock();
 	var statsOn = true;
+	var multiplier = 1;
 	
+	var clock1 = new THREE.Clock();
+		
 	// Debugging 
 	var DEBUG = true;
   	
   	//// INITIALIZATION ////
   	// Function calls to start the program
-    init();
-    animate();
 
+	function start(){
+		init();
+		animate();
+	}
+	
     function init() {
     	
     	if (DEBUG) console.debug("Init start");
@@ -50,7 +51,7 @@
     	
     	//// STATS ////
     	statsInit();
-    	statsbutton.onclick=function(){
+    	btnStats.onclick=function(){
     		if(statsOn){
 	    		stats.domElement.style.visibility = 'hidden';
 	    		physStats.domElement.style.visibility = 'hidden';
@@ -168,8 +169,15 @@
 		    rfs.call(el);
 		});
         drawLine();       
-        update();      
+        update();
+        
+        btnSpeed.onclick=function(){
+        	multiplier++;
+        	pSpeed.innerHTML = multiplier;
+        	};
+        
         if (DEBUG) console.debug("Init complete");
+        
     }
     
     // Update function to keep physics rolling
@@ -193,8 +201,18 @@
     function render() {
     	renderer.render( scene, camera );
     }
-    	
+    
 </script>
+
+<body onload="start();">
+	<div id="menu">
+			<button id="btnSpeed">SPEED++</button>
+			<button id="btnStats">STATS</button>
+			<button id="tracking">TRACKING</button>
+			<button id="hud">HUD</button>
+	</div>
+	<div id="HUD">Time Dilation: x<span id="pSpeed">1</span>
+		</div>
 
 </body>
 </html>

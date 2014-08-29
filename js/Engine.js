@@ -33,7 +33,7 @@ function physAdd(object){
 function physUpdate(){
 	
 	// Get time since last update
-	var delta = physClock.getDelta();
+	var delta = (physClock.getDelta())*multiplier;
 	
 	// Update all physics objects
 	for (i = 0; i < physArray.length; i++){
