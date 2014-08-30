@@ -29,7 +29,8 @@
 	var fullscreen = false;
 	var statsOn = true;
 	var multiplier = 1;
-	
+	var physMode = "euler";
+	var traceLength = 1000;
 	var clock1 = new THREE.Clock();
 		
 	// Debugging 
@@ -91,7 +92,7 @@
 		//// MATERIALS ////
 			material 	= new THREE.MeshBasicMaterial	( { color: 0x19FF19, wireframe: true } );	
         var material2 	= new THREE.MeshLambertMaterial	( { color: 0xffffff } );
-        var material3 	= new THREE.LineBasicMaterial	( { color: 0x0000ff } );
+        	material3 	= new THREE.LineBasicMaterial	( { color: 0x0000ff } );
         var	material4 	= new THREE.MeshBasicMaterial	( { color: 0xff0000, wireframe: true } );    
 		
 		//// GEOMETRIES ////
@@ -100,7 +101,6 @@
         var ball 		= new THREE.SphereGeometry( 25, 16, 16);
         	point 		= new THREE.SphereGeometry( 1, 1, 1);
         var base 		= new THREE.SphereGeometry( 5000, 16, 16);
-        var geometry	= new THREE.Geometry();
 		
 		//// SCENE ITEMS ////
 		// Sun
@@ -158,16 +158,7 @@
         //// LISTENERS ////
         // Dynamic window resizing
         window.addEventListener( 'resize', onWindowResize, false );
-        // Fullscreen
-        addEventListener("keypress", function( p ) {
-		    var el = document.documentElement
-		        , rfs =
-		               el.requestFullScreen
-		            || el.webkitRequestFullScreen
-		            || el.mozRequestFullScreen
-		    ;
-		    rfs.call(el);
-		});
+        
         drawLine();       
         update();
         
@@ -202,13 +193,38 @@
     	renderer.render( scene, camera );
     }
     
+    // Function to toggle fullscreen
+    function toggleFullScreen() {
+	  if (!document.fullscreenElement &&    // alternative standard method
+	      !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement ) {  // current working methods
+	    if (document.documentElement.requestFullscreen) {
+	      document.documentElement.requestFullscreen();
+	    } else if (document.documentElement.msRequestFullscreen) {
+	      document.documentElement.msRequestFullscreen();
+	    } else if (document.documentElement.mozRequestFullScreen) {
+	      document.documentElement.mozRequestFullScreen();
+	    } else if (document.documentElement.webkitRequestFullscreen) {
+	      document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+	    }
+	  } else {
+	    if (document.exitFullscreen) {
+	      document.exitFullscreen();
+	    } else if (document.msExitFullscreen) {
+	      document.msExitFullscreen();
+	    } else if (document.mozCancelFullScreen) {
+	      document.mozCancelFullScreen();
+	    } else if (document.webkitExitFullscreen) {
+	      document.webkitExitFullscreen();
+	    }
+	  }
+	}
 </script>
 
 <body onload="start();">
 	<div id="menu">
 			<button id="btnSpeed">SPEED++</button>
 			<button id="btnStats">STATS</button>
-			<button id="tracking">TRACKING</button>
+			<button id="btnFS" onclick="toggleFullScreen()">FULL SCREEN</button>
 			<button id="hud">HUD</button>
 	</div>
 	<div id="HUD">Time Dilation: x<span id="pSpeed">1</span>

@@ -25,6 +25,16 @@ function physAdd(object){
 	object.spin 		= new THREE.Vector3(0, 0, 0);
 	object.mass			= 0;
 	
+	geometry		= new THREE.Geometry();
+	
+	for (i=0; i<traceLength; i++){
+    	geometry.vertices.push(object.position.clone());
+    }    
+    
+    object.traceLine 	= new THREE.Line(geometry, material3);
+    object.traceLine.geometry.dynamic = true;  
+    scene.add(object.traceLine);
+	
 	// Add to the array
 	physArray.push(object);
 }
@@ -35,6 +45,30 @@ function physUpdate(){
 	// Get time since last update
 	var delta = (physClock.getDelta())*multiplier;
 	
+	// Update acceleration
+	physAcceleration();
+	
+	// Update positions
+	if(physMode == "verlet"){
+		for (i = 0; i < physArray.length; i++){
+			physPositionVerlet(physArray[i], delta);	
+		}
+	}
+	else if(physMode == "RK4"){
+		for (i = 0; i < physArray.length; i++){
+			physPositionRK4(physArray[i], delta);	
+		}
+	}
+	else {
+		for (i = 0; i < physArray.length; i++){
+			physPositionEuler(physArray[i], delta);	
+		}
+	}
+	// Update physics FPS
+	physStats.update();
+}
+
+function physAcceleration(){
 	// Update all physics objects
 	for (i = 0; i < physArray.length; i++){
 		for (j = 0; j < physArray.length; j++){
@@ -43,10 +77,6 @@ function physUpdate(){
 			}	
 		}	
 	}
-	for (i = 0; i < physArray.length; i++){
-		physPosition(physArray[i], delta);	
-	}
-	physStats.update();
 }
 
 // Returns a vector3 with time adjusted movement
@@ -56,13 +86,9 @@ function addVector(vector, delta){
 	return tmp;
 }
 
-// Kinematics
-function physPosition(object, delta){
-	// Update Position
-	object.position.x += (object.velocity.x * delta) + (0.5*object.acceleration.x*(Math.pow(delta,2)));
-	object.position.y += (object.velocity.y * delta) + (0.5*object.acceleration.y*(Math.pow(delta,2)));
-	object.position.z += (object.velocity.z * delta) + (0.5*object.acceleration.z*(Math.pow(delta,2)));
-	
+//// KINEMATICS ////
+// Euler method
+function physPositionEuler(object, delta){	
 	// Update Velocity (acceleration)
 	object.velocity.x += object.acceleration.x * delta;
 	object.velocity.y += object.acceleration.y * delta;
@@ -73,10 +99,27 @@ function physPosition(object, delta){
 	object.velocity.y += object.gravity.y * delta;
 	object.velocity.z += object.gravity.z * delta;
 	
+	// Update Position
+	object.position.x += object.velocity.x * delta;
+	object.position.y += object.velocity.y * delta;
+	object.position.z += object.velocity.z * delta;
+	
 	// Update Rotation
 	object.rotation.x += object.spin.x * delta; 
 	object.rotation.y += object.spin.y * delta; 
 	object.rotation.z += object.spin.z * delta; 
+}
+
+// Verlet Method
+function physPositionVerlet(object, delta){
+	//todo
+	console.warn("Verlet physics not implemented yet!");
+}
+
+// Runge-Kutta Method
+function physPositionRK4(object, delta){
+	//todo
+	console.warn("Runge-Kutta physics not implemented yet!");
 }
 
 // Calculates the gravitational pull between two objects 
@@ -92,12 +135,18 @@ function physGravity(a, b){
 
 //// LINES ////
 function drawLine(){
-		dot = new THREE.Mesh( point, material);
-		scene.add( dot );
-		dot.position.x = cube1.position.x;
-		dot.position.y = cube1.position.y;
-		dot.position.z = cube1.position.z;
-		setTimeout("drawLine()",1000);
+		// obsolete dot method
+		// dot = new THREE.Mesh( point, material);
+		// scene.add( dot );
+		// dot.position.copy(cube1.position);
+		
+		// Delete first element
+		cube1.traceLine.geometry.vertices.push(cube1.traceLine.geometry.vertices.shift());
+    	// Append to line
+    	cube1.traceLine.geometry.vertices[traceLength-1].copy(cube1.position); 
+    	cube1.traceLine.geometry.verticesNeedUpdate = true;
+    	
+    	setTimeout("drawLine()",1000);
 }
 
 //// Utilities ////
