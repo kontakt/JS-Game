@@ -135,10 +135,6 @@ function physGravity(a, b){
 
 //// LINES ////
 function drawLine(){
-		// obsolete dot method
-		// dot = new THREE.Mesh( point, material);
-		// scene.add( dot );
-		// dot.position.copy(cube1.position);
 		
 		// Delete first element
 		cube1.traceLine.geometry.vertices.push(cube1.traceLine.geometry.vertices.shift());
