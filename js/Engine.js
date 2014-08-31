@@ -24,14 +24,13 @@ function physAdd(object){
 	object.gravity		= new THREE.Vector3(0, 0, 0);
 	object.spin 		= new THREE.Vector3(0, 0, 0);
 	object.mass			= 0;
-	
-	geometry		= new THREE.Geometry();
+	object.tracePT		= new THREE.Geometry();
 	
 	for (i=0; i<traceLength; i++){
-    	geometry.vertices.push(object.position.clone());
+    	object.tracePT.vertices.push(object.position.clone());
     }    
     
-    object.traceLine 	= new THREE.Line(geometry, material3);
+    object.traceLine 	= new THREE.Line(object.tracePT, material3);
     object.traceLine.geometry.dynamic = true;  
     scene.add(object.traceLine);
 	
@@ -61,7 +60,8 @@ function physUpdate(){
 	}
 	else {
 		for (i = 0; i < physArray.length; i++){
-			physPositionEuler(physArray[i], delta);	
+			physPositionEuler(physArray[i], delta);
+			drawLine(physArray[i]);	
 		}
 	}
 	// Update physics FPS
@@ -134,15 +134,17 @@ function physGravity(a, b){
 }
 
 //// LINES ////
-function drawLine(){
-		
+function drawLine(object){
+	var tmp = new THREE.Vector3;
+	tmp.subVectors(object.position, object.traceLine.geometry.vertices[traceLength-1]);
+	if(tmp.lengthSq() > 1000){
 		// Delete first element
-		cube1.traceLine.geometry.vertices.push(cube1.traceLine.geometry.vertices.shift());
+		object.traceLine.geometry.vertices.push(object.traceLine.geometry.vertices.shift());
     	// Append to line
-    	cube1.traceLine.geometry.vertices[traceLength-1].copy(cube1.position); 
-    	cube1.traceLine.geometry.verticesNeedUpdate = true;
+    	object.traceLine.geometry.vertices[traceLength-1].copy(object.position); 
+    	object.traceLine.geometry.verticesNeedUpdate = true;
+    }
     	
-    	setTimeout("drawLine()",1000);
 }
 
 //// Utilities ////
