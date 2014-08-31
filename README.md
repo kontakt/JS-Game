@@ -12,3 +12,5 @@ Updates will be made in my spare time, whenever I get the enthusiasm to code mor
 _" If I have seen further it is by standing on the shoulders of Giants"_ 
 
 Thank you to everyone that has helped me get farther with my project, by directly answering my questions or indirectly having asked the dumb questions before me.
+
+Especially mrdoob. He always has a fast answer that's just what I needed.
