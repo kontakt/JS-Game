@@ -1,8 +1,8 @@
 <!DOCTYPE html>
+<title>Initializing</title>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Version 0.0</title>
 <link rel="stylesheet" type="text/css" href="index.css">
 
 <!-- Three.js Engine --> 
@@ -22,15 +22,15 @@
 
 </head>
 
-<script>	
+<script>
+
+	var version = '0.0';
+		
 	//// GLOBALS ////
 	// Declaring basic vars
     var scene, camera, renderer;
 	var fullscreen = false;
 	var statsOn = true;
-	var multiplier = 1;
-	var physMode = "euler";
-	var traceLength = 1000;
 	var clock1 = new THREE.Clock();
 		
 	// Debugging 
@@ -160,11 +160,15 @@
         window.addEventListener( 'resize', onWindowResize, false );
        
         update();
-        
+        document.title = 'Version '+version;
         btnSpeed.onclick=function(){
         	multiplier++;
         	pSpeed.innerHTML = multiplier;
+        	pause = false;
         	};
+        	
+        var visible = vis();
+		vis(function(){focusChange();});
         
         if (DEBUG) console.debug("Init complete");
         
@@ -224,7 +228,7 @@
 			<button id="btnSpeed">SPEED++</button>
 			<button id="btnStats">STATS</button>
 			<button id="btnFS" onclick="toggleFullScreen()">FULL SCREEN</button>
-			<button id="hud">HUD</button>
+			<button id="btnPause" onclick="physPause()">PAUSE</button>
 	</div>
 	<div id="HUD">
 		<div id="hudTime">Time Dilation: x<span id="pSpeed">1</span>
