@@ -25,6 +25,7 @@ function physInit(){
 	
 	// Array of all physics objects
 	physArray = [];
+	physDeadArray = [];
 	if (DEBUG) console.debug("Phys Init");
 }
 
@@ -154,26 +155,41 @@ function physGravity(a, b){
 	var r = grav.lengthSq();
 	var as = a.geometry.boundingSphere.radius;
 	var bs = b.geometry.boundingSphere.radius;
-	var index;
+	// Detect collision
 	if (Math.sqrt(r) <= as+bs) {
-		if ( as <= bs ){
-			scene.remove(a);
-			index = physArray.indexOf(a);
-			physArray.splice(index, 1);
-			if ( DEBUG ) console.debug("Object removed");
-		}
-		else {
-			scene.remove(b);
-			index = physArray.indexOf(b);
-			physArray.splice(index, 1);
-			if ( DEBUG ) console.debug("Object removed");
-		}
+		if ( as <= bs ) physCollision( b, a );
+			
+		else physCollision( a, b );	
 	}
 	var A = (G)*(b.mass)/(r);
 	grav = grav.normalize();
 	grav.multiplyScalar(-A);
 	a.gravity.copy( grav );
 	
+}
+
+// Collision physics
+function physCollision ( a, b ){
+	// Transfer mass and momentum
+	var aMomentum 		= new THREE.Vector3(0, 0, 0);
+	var bMomentum 		= new THREE.Vector3(0, 0, 0);
+	aMomentum.copy(a.velocity);
+	bMomentum.copy(b.velocity);
+	aMomentum.multiplyScalar(a.mass);
+	bMomentum.multiplyScalar(b.mass);
+	aMomentum.addVectors(aMomentum, bMomentum);
+	a.mass += b.mass;
+	aMomentum.divideScalar(a.mass);
+	a.velocity.copy(aMomentum);
+	
+	// Destroy the object
+	scene.remove(b.traceLine);
+	scene.remove(b);
+	var index = physArray.indexOf(b);
+	physDeadArray.push(physArray.indexOf(b));
+	physArray.splice(index, 1);
+	if ( DEBUG ) console.debug(b.name+" collided with "+a.name);
+		
 }
 
 //// LINES ////
@@ -203,7 +219,7 @@ function onWindowResize() {
     camera.updateProjectionMatrix();
 	renderer.setSize( window.innerWidth, window.innerHeight );
 	HUDinit();
-    if (DEBUG) console.debug("Window resized");
+    if ( DEBUG ) console.debug("Window resized");
 }
 	
 // Initializes stats
