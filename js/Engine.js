@@ -29,29 +29,29 @@ function physInit(){
 }
 
 // Add and object to the array and initialize all extra vectors
-function physAdd(object){
+function physAdd( a ){
 	
 	// Add necessary vectors (x, y ,z)
-	object.velocity 	= new THREE.Vector3(0, 0, 0);
-	object.acceleration = new THREE.Vector3(0, 0, 0);
-	object.gravity		= new THREE.Vector3(0, 0, 0);
-	object.spin 		= new THREE.Vector3(0, 0, 0);
-	object.mass			= 0;
+	a.velocity 		= new THREE.Vector3(0, 0, 0);
+	a.acceleration 	= new THREE.Vector3(0, 0, 0);
+	a.gravity		= new THREE.Vector3(0, 0, 0);
+	a.spin 			= new THREE.Vector3(0, 0, 0);
+	a.mass			= 0;
 	
 	// Points in trace
-	object.tracePT		= new THREE.Geometry();
+	a.tracePT		= new THREE.Geometry();
 	
 	for (i=0; i<traceLength; i++){
-    	object.tracePT.vertices.push(object.position.clone());
+    	a.tracePT.vertices.push(a.position.clone());
     }    
     
     // Line for trace
-    object.traceLine 	= new THREE.Line(object.tracePT, material3);
-    object.traceLine.geometry.dynamic = true;  
-    scene.add(object.traceLine);
-	
+    a.traceLine 	= new THREE.Line(a.tracePT, material3);
+    a.traceLine.geometry.dynamic = true;  
+    scene.add(a.traceLine);
+
 	// Add to the array
-	physArray.push(object);
+	physArray.push(a);
 }
 
 // Steps all physics objects
@@ -151,10 +151,28 @@ function physGravity(a, b){
 	var grav = new THREE.Vector3(0, 0, 0);
 	grav = grav.subVectors(a.position, b.position);
 	var r = grav.lengthSq();
+	var as = a.geometry.boundingSphere.radius;
+	var bs = b.geometry.boundingSphere.radius;
+	var index;
+	if (Math.sqrt(r) <= as+bs) {
+		if ( as <= bs ){
+			scene.remove(a);
+			index = physArray.indexOf(a);
+			physArray.splice(index, 1);
+			if ( DEBUG ) console.debug("Object removed");
+		}
+		else {
+			scene.remove(b);
+			index = physArray.indexOf(b);
+			physArray.splice(index, 1);
+			if ( DEBUG ) console.debug("Object removed");
+		}
+	}
 	var A = (G)*(b.mass)/(r);
 	grav = grav.normalize();
 	grav.multiplyScalar(-A);
-	a.gravity = grav;
+	a.gravity.copy( grav );
+	
 }
 
 //// LINES ////
@@ -183,6 +201,7 @@ function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
 	renderer.setSize( window.innerWidth, window.innerHeight );
+	HUDinit();
     if (DEBUG) console.debug("Window resized");
 }
 	
@@ -240,3 +259,39 @@ function focusChange(){
 	}
 
 }
+
+// Function to toggle fullscreen
+    function toggleFullScreen() {
+	  if (!document.fullscreenElement &&    // alternative standard method
+	      !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement ) {  // current working methods
+	    if (document.documentElement.requestFullscreen) {
+	      document.documentElement.requestFullscreen();
+	    } else if (document.documentElement.msRequestFullscreen) {
+	      document.documentElement.msRequestFullscreen();
+	    } else if (document.documentElement.mozRequestFullScreen) {
+	      document.documentElement.mozRequestFullScreen();
+	    } else if (document.documentElement.webkitRequestFullscreen) {
+	      document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+	    }
+	  } else {
+	    if (document.exitFullscreen) {
+	      document.exitFullscreen();
+	    } else if (document.msExitFullscreen) {
+	      document.msExitFullscreen();
+	    } else if (document.mozCancelFullScreen) {
+	      document.mozCancelFullScreen();
+	    } else if (document.webkitExitFullscreen) {
+	      document.webkitExitFullscreen();
+	    }
+	  }
+	}
+	
+// Converts from degrees to radians.
+Math.radians = function(degrees) {
+  return degrees * Math.PI / 180;
+};
+ 
+// Converts from radians to degrees.
+Math.degrees = function(radians) {
+  return radians * 180 / Math.PI;
+};
