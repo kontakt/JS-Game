@@ -8,7 +8,7 @@ var G = 6.674e-11;
 // Physics method
 var physMode = "euler";
 // Number of points in physics trace
-var traceLength = 1000;
+var traceLength = 100;
 // Distance between trace points squared
 var traceInterval = 1000;
 // Speed of physics simulation (seconds per second)
@@ -48,6 +48,7 @@ function physAdd( a ){
     // Line for trace
     a.traceLine 	= new THREE.Line(a.tracePT, material3);
     a.traceLine.geometry.dynamic = true;  
+    a.traceLine.frustumCulled = false;
     scene.add(a.traceLine);
 
 	// Add to the array
@@ -112,36 +113,36 @@ function physPause(){
 
 //// KINEMATICS ////
 // Euler method
-function physPositionEuler(object, delta){	
+function physPositionEuler(a, delta){	
 	// Update Velocity (acceleration)
-	object.velocity.x += object.acceleration.x * delta;
-	object.velocity.y += object.acceleration.y * delta;
-	object.velocity.z += object.acceleration.z * delta;
+	a.velocity.x += a.acceleration.x * delta;
+	a.velocity.y += a.acceleration.y * delta;
+	a.velocity.z += a.acceleration.z * delta;
 	
 	// Update Velocity (gravity)
-	object.velocity.x += object.gravity.x * delta;
-	object.velocity.y += object.gravity.y * delta;
-	object.velocity.z += object.gravity.z * delta;
+	a.velocity.x += a.gravity.x * delta;
+	a.velocity.y += a.gravity.y * delta;
+	a.velocity.z += a.gravity.z * delta;
 	
 	// Update Position
-	object.position.x += object.velocity.x * delta;
-	object.position.y += object.velocity.y * delta;
-	object.position.z += object.velocity.z * delta;
+	a.position.x += a.velocity.x * delta;
+	a.position.y += a.velocity.y * delta;
+	a.position.z += a.velocity.z * delta;
 	
 	// Update Rotation
-	object.rotation.x += object.spin.x * delta; 
-	object.rotation.y += object.spin.y * delta; 
-	object.rotation.z += object.spin.z * delta; 
+	a.rotation.x += a.spin.x * delta; 
+	a.rotation.y += a.spin.y * delta; 
+	a.rotation.z += a.spin.z * delta; 
 }
 
 // Verlet Method
-function physPositionVerlet(object, delta){
+function physPositionVerlet(a, delta){
 	//todo
 	throw "Verlet physics not implemented yet!";
 }
 
 // Runge-Kutta Method
-function physPositionRK4(object, delta){
+function physPositionRK4(a, delta){
 	//todo
 	throw "Runge-Kutta physics not implemented yet!";
 }
@@ -176,19 +177,19 @@ function physGravity(a, b){
 }
 
 //// LINES ////
-function drawLine(object){
+function drawLine(a){
 	var tmp = new THREE.Vector3;
-	tmp.subVectors(object.position, object.traceLine.geometry.vertices[traceLength-2]);
+	tmp.subVectors(a.position, a.traceLine.geometry.vertices[traceLength-2]);
 	if(tmp.lengthSq() > traceInterval){
 		// Delete first element
-		object.traceLine.geometry.vertices.push(object.traceLine.geometry.vertices.shift());
+		a.traceLine.geometry.vertices.push(a.traceLine.geometry.vertices.shift());
     	// Append to line
-    	object.traceLine.geometry.vertices[traceLength-1].copy(object.position); 
-    	object.traceLine.geometry.verticesNeedUpdate = true;
+    	a.traceLine.geometry.vertices[traceLength-1].copy(a.position); 
+    	a.traceLine.geometry.verticesNeedUpdate = true;
     }
     else {
-    	object.traceLine.geometry.vertices[traceLength-1].copy(object.position);
-    	object.traceLine.geometry.verticesNeedUpdate = true;
+    	a.traceLine.geometry.vertices[traceLength-1].copy(a.position);
+    	a.traceLine.geometry.verticesNeedUpdate = true;
     }
     	
 }
