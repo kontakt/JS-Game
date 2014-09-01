@@ -64,7 +64,7 @@ function physUpdate(){
 	
 	// Update acceleration
 	physAcceleration();
-	shipPilot(cube2, cube1);
+	missileTrack2(cube2, cube1);
 	
 	// Update positions
 	if(physMode == "verlet"){

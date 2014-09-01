@@ -148,20 +148,18 @@
         cube2 = new THREE.Mesh( box2, material4 );
         scene.add( cube2 );
         cube2.name = "Probe";
-        cube2.position.x = 100;
-		cube2.position.y = 30;
-		cube2.position.z = 70;
+        cube2.position.x = -1000;
+		cube2.position.y = -300;
+		cube2.position.z = -700;
 		
 		physAdd(cube1);
 		cube1.mass = 10000;
 		cube1.velocity.x = 15;
-		
 		 
 		physAdd(cube2);
-		cube2.velocity.x = 100;
 		cube2.spin.y = 0.1;
 		cube2.spin.x = 0.2;
-		cube2.mass = 1000;
+		cube2.mass = 100;
 		
 		physAdd(sphere);
 		sphere.spin.y = 0.01;

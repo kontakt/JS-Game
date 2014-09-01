@@ -24,13 +24,45 @@ function missileTrack ( a, b ){
 	var targetVel 		= new THREE.Vector3();
 	var targetPos 		= new THREE.Vector3(); 
 	var rotation 		= new THREE.Vector3();
+	var N				= 5;
 	
 	// Get the target's position and velocity relative to the missile
 	targetVel.subVectors( b.velocity, a.velocity );
 	targetPos.subVectors( b.position, a.position );
 	
+	// Determine the rotation vector
 	rotation.crossVectors( targetVel, targetPos );
 	rotation.divideScalar( targetPos.lengthSq() );
 	
-		
+	// Get the direction to the target and set your acceleration
+	targetPos.normalize();
+	targetPos.multiplyScalar( targetVel.length() );
+	targetPos.multiplyScalar( -N );
+	
+	// Set the acceleration 
+	acceleration.crossVectors( rotation, targetPos );
+	a.acceleration.copy( acceleration );
+}
+
+function missileTrack2 ( a, b ){
+	var acceleration 	= new THREE.Vector3();
+	var targetVel 		= new THREE.Vector3();
+	var targetPos 		= new THREE.Vector3(); 
+	var rotation 		= new THREE.Vector3();
+	var N				= 5;
+	
+	// Get the target's position and velocity relative to the missile
+	targetVel.subVectors( b.velocity, a.velocity );
+	targetPos.subVectors( b.position, a.position );
+	
+	// Determine the rotation vector
+	rotation.crossVectors( targetVel, targetPos );
+	rotation.divideScalar( targetPos.lengthSq() );
+	
+	// Get the direction to the target and set your acceleration
+	targetVel.multiplyScalar( N );
+	
+	// Set the acceleration 
+	acceleration.crossVectors( rotation, targetVel );
+	a.acceleration.copy( acceleration );
 }
