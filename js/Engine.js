@@ -34,17 +34,17 @@ function physInit(){
 	
 	// Array of all physics objects
 	physArray = [];
-	if (DEBUG) console.debug("Phys Init");
+	if ( DEBUG ) console.debug( "Phys Init" );
 }
 
 // Add and object to the array and initialize all extra vectors
 function physAdd( a ){
 	
 	// Add necessary vectors (x, y ,z)
-	a.velocity 		= new THREE.Vector3(0, 0, 0);
-	a.acceleration 	= new THREE.Vector3(0, 0, 0);
-	a.gravity		= new THREE.Vector3(0, 0, 0);
-	a.spin 			= new THREE.Vector3(0, 0, 0);
+	a.velocity 		= new THREE.Vector3( 0, 0, 0 );
+	a.acceleration 	= new THREE.Vector3( 0, 0, 0 );
+	a.gravity		= new THREE.Vector3( 0, 0, 0 );
+	a.spin 			= new THREE.Vector3( 0, 0, 0 );
 	a.mass			= 0;
 	a.dead 			= false;
 	
@@ -56,10 +56,10 @@ function physAdd( a ){
     }    
     
     // Line for trace
-    a.traceLine 	= new THREE.Line(a.tracePT, material3);
+    a.traceLine 	= new THREE.Line( a.tracePT, material3 );
     a.traceLine.geometry.dynamic = true;  
     a.traceLine.frustumCulled = false;
-    scene.add(a.traceLine);
+    scene.add( a.traceLine );
 
 	// Add to the array
 	physArray.push(a);
@@ -69,31 +69,31 @@ function physAdd( a ){
 function physUpdate(){
 	
 	// Get time since last update
-	var delta = (physClock.getDelta())*multiplier;
+	var delta = physClock.getDelta() * multiplier;
 	
 	// Update acceleration
 	physAcceleration();
 	
 	
 	// Update positions
-	if(physMode == "verlet"){
-		for (i = 0; i < physArray.length; i++){
-			physPositionVerlet(physArray[i], delta);
-			drawLine(physArray[i]);	
+	if( physMode == "verlet" ){
+		for ( i = 0; i < physArray.length; i++ ){
+			physPositionVerlet( physArray[i], delta );
+			drawLine( physArray[i] );	
 		}
 	}
-	else if(physMode == "RK4"){
+	else if( physMode == "RK4" ){
 		for (i = 0; i < physArray.length; i++){
-			physPositionRK4(physArray[i], delta);
-			drawLine(physArray[i]);	
+			physPositionRK4( physArray[i], delta );
+			drawLine( physArray[i] );	
 		}
 	}
 	else {
 		for (i = 0; i < physArray.length; i++){
 			if ( !physArray[i].dead ){
-				physPositionEuler(physArray[i], delta);
-				if (i != physArray.length-1) missileTrack(physArray[i], cube1);
-				drawLine(physArray[i]);	
+				physPositionEuler( physArray[i], delta );
+				if ( i != physArray.length-1 ) missileTrack( physArray[i], cube1 );
+				drawLine( physArray[i] );	
 			}
 			else {
 				eraseLine( physArray[i] );
@@ -110,11 +110,11 @@ function physUpdate(){
 
 function physAcceleration(){
 	// Update all physics objects
-	for (i = 0; i < physArray.length; i++){
-		if (physArray[i].dead) continue;
-		for (j = 0; j < physArray.length; j++){
-			if (physArray[j].dead) continue;
-			if (i != j ){
+	for ( i = 0; i < physArray.length; i++ ){
+		if ( physArray[i].dead ) continue;
+		for ( j = 0; j < physArray.length; j++ ){
+			if ( physArray[j].dead ) continue;
+			if ( i != j ){
 				 physGravity(physArray[i], physArray[j]);
 			}	
 		}	
@@ -195,52 +195,49 @@ function physGravity(a, b){
 // Collision physics
 function physCollision ( a, b ){
 	// Transfer mass and momentum
-	var aMomentum 		= new THREE.Vector3(0, 0, 0);
-	var bMomentum 		= new THREE.Vector3(0, 0, 0);
-	aMomentum.copy(a.velocity);
-	bMomentum.copy(b.velocity);
-	aMomentum.multiplyScalar(a.mass);
-	bMomentum.multiplyScalar(b.mass);
-	aMomentum.addVectors(aMomentum, bMomentum);
+	var aMomentum 		= new THREE.Vector3( 0, 0, 0 );
+	var bMomentum 		= new THREE.Vector3( 0, 0, 0 );
+	aMomentum.copy( a.velocity );
+	bMomentum.copy( b.velocity );
+	aMomentum.multiplyScalar( a.mass );
+	bMomentum.multiplyScalar( b.mass );
+	aMomentum.addVectors( aMomentum, bMomentum );
 	a.mass += b.mass;
-	aMomentum.divideScalar(a.mass);
-	a.velocity.copy(aMomentum);
+	aMomentum.divideScalar( a.mass );
+	a.velocity.copy( aMomentum );
 	
 	// Remove the object from the scene and mark it as 'dead' for physics purposes
-	b.velocity.copy(zero);
-	b.acceleration.copy(zero);
-	b.gravity.copy(zero);
-	b.spin.copy(zero);
+	b.velocity.copy( zero );
+	b.acceleration.copy( zero );
+	b.gravity.copy( zero );
+	b.spin.copy( zero );
 	b.mass = 0;
-	b.traceLine.geometry.mergeVertices();
 	b.dead = true;
-	scene.remove(b);
+	scene.remove( b );
 	if ( DEBUG ) console.debug(b.name+" collided with "+a.name);
 		
 }
 
 //// LINES ////
 function drawLine ( a ){
-	tmp.subVectors(a.position, a.traceLine.geometry.vertices[traceLength-2]);
-	if(tmp.lengthSq() > traceInterval){
+	tmp.subVectors( a.position, a.traceLine.geometry.vertices[traceLength-2] );
+	if ( tmp.lengthSq() > traceInterval ){
 		// Delete first element
-		a.traceLine.geometry.vertices.push(a.traceLine.geometry.vertices.shift());
+		a.traceLine.geometry.vertices.push( a.traceLine.geometry.vertices.shift() );
     	// Append to line
-    	a.traceLine.geometry.vertices[traceLength-1].copy(a.position); 
+    	a.traceLine.geometry.vertices[traceLength-1].copy( a.position ); 
     	a.traceLine.geometry.verticesNeedUpdate = true;
     }
     else {
-    	a.traceLine.geometry.vertices[traceLength-1].copy(a.position);
+    	a.traceLine.geometry.vertices[traceLength-1].copy( a.position );
     	a.traceLine.geometry.verticesNeedUpdate = true;
     }
     	
 }
 
 function eraseLine( a ){
-		for ( var i=0; i < 10; i ++ ){
-			a.traceLine.geometry.vertices.push(a.traceLine.geometry.vertices.shift());
-	    	a.traceLine.geometry.vertices[traceLength-1].copy(a.position); 
-    	}
+		a.traceLine.geometry.vertices.push(a.traceLine.geometry.vertices.shift());
+    	a.traceLine.geometry.vertices[a.traceLine.geometry.vertices.length-1].copy( a.position ); 
     	a.traceLine.geometry.verticesNeedUpdate = true;
 }
 
@@ -253,16 +250,16 @@ function onWindowResize() {
     camera.updateProjectionMatrix();
 	renderer.setSize( window.innerWidth, window.innerHeight );
 	HUDinit();
-    if ( DEBUG ) console.debug("Window resized");
+    if ( DEBUG ) console.debug( "Window resized" );
 }
 	
 // Initializes stats
 function statsInit(){
 	stats = new Stats();
-	stats.setMode(0); // 0: fps, 1: ms
+	stats.setMode( 0 ); // 0: fps, 1: ms
 	
 	physStats = new Stats();
-	physStats.setMode(0); // 0: fps, 1: ms
+	physStats.setMode( 0 ); // 0: fps, 1: ms
 	
 	// Framerate for draw
 	stats.domElement.style.position = 'absolute';
@@ -276,7 +273,7 @@ function statsInit(){
 
 	document.body.appendChild( stats.domElement );
 	document.body.appendChild( physStats.domElement );
-	if (DEBUG) console.debug("Stats Init");
+	if (DEBUG) console.debug( "Stats Init" );
 }
 
 // Window Visibility
@@ -288,24 +285,24 @@ var vis = (function(){
         msHidden: "msvisibilitychange"
     };
     for (stateKey in keys) {
-        if (stateKey in document) {
+        if ( stateKey in document ) {
             eventKey = keys[stateKey];
             break;
         }
     }
-    return function(c) {
-        if (c) document.addEventListener(eventKey, c);
+    return function( c ) {
+        if ( c ) document.addEventListener( eventKey, c );
         return !document[stateKey];
     };
 })();
 
 function focusChange(){
-	if(vis()){
-		document.title = 'Version '+version;
+	if( vis() ){
+		document.title = 'Version ' + version;
 		physPause();
 	}
 	else{
-		document.title = 'Version '+version+' - PAUSE';
+		document.title = 'Version ' + version + ' - PAUSE';
 		physPause();
 	}
 
