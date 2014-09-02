@@ -4,11 +4,20 @@
 // Gravitational Constant
 var G = 6.674e-11;
 
+// Astronomical Unit in km
+var AU = 149597871;
+
+// Null vector
+var zero = new THREE.Vector3( 0, 0, 0 );
+
+// Temp vector
+var tmp = new THREE.Vector3();
+
 //// Control variables ////
 // Physics method
 var physMode = "euler";
 // Number of points in physics trace
-var traceLength = 100;
+var traceLength = 10000;
 // Distance between trace points squared
 var traceInterval = 1000;
 // Speed of physics simulation (seconds per second)
@@ -25,7 +34,6 @@ function physInit(){
 	
 	// Array of all physics objects
 	physArray = [];
-	physDeadArray = [];
 	if (DEBUG) console.debug("Phys Init");
 }
 
@@ -38,6 +46,7 @@ function physAdd( a ){
 	a.gravity		= new THREE.Vector3(0, 0, 0);
 	a.spin 			= new THREE.Vector3(0, 0, 0);
 	a.mass			= 0;
+	a.dead 			= false;
 	
 	// Points in trace
 	a.tracePT		= new THREE.Geometry();
@@ -64,7 +73,7 @@ function physUpdate(){
 	
 	// Update acceleration
 	physAcceleration();
-	missileTrack2(cube2, cube1);
+	
 	
 	// Update positions
 	if(physMode == "verlet"){
@@ -81,19 +90,31 @@ function physUpdate(){
 	}
 	else {
 		for (i = 0; i < physArray.length; i++){
-			physPositionEuler(physArray[i], delta);
-			drawLine(physArray[i]);	
+			if ( !physArray[i].dead ){
+				physPositionEuler(physArray[i], delta);
+				if (i != physArray.length-1) missileTrack(physArray[i], cube1);
+				drawLine(physArray[i]);	
+			}
+			else {
+				eraseLine( physArray[i] );
+			}
+				
 		}
 	}
 	// Update physics FPS
 	physStats.update();
+	
+	// Set the next call for physics
+	setTimeout( function(){physUpdate();}, 8 );
 }
 
 function physAcceleration(){
 	// Update all physics objects
 	for (i = 0; i < physArray.length; i++){
+		if (physArray[i].dead) continue;
 		for (j = 0; j < physArray.length; j++){
-			if (i != j){
+			if (physArray[j].dead) continue;
+			if (i != j ){
 				 physGravity(physArray[i], physArray[j]);
 			}	
 		}	
@@ -153,15 +174,17 @@ function physPositionRK4(a, delta){
 function physGravity(a, b){
 	var grav = new THREE.Vector3(0, 0, 0);
 	grav = grav.subVectors(a.position, b.position);
-	var r = grav.lengthSq();
 	var as = a.geometry.boundingSphere.radius;
 	var bs = b.geometry.boundingSphere.radius;
 	// Detect collision
-	if (Math.sqrt(r) <= as+bs) {
-		if ( as <= bs ) physCollision( b, a );
+	if ( grav.length() <= as+bs) {
+		if ( a.mass <= b.mass ) physCollision( b, a );
 			
-		else physCollision( a, b );	
+		else physCollision( a, b );
+		return;	
 	}
+	grav.multiplyScalar(1000);
+	var r = grav.lengthSq();
 	var A = (G)*(b.mass)/(r);
 	grav = grav.normalize();
 	grav.multiplyScalar(-A);
@@ -183,19 +206,21 @@ function physCollision ( a, b ){
 	aMomentum.divideScalar(a.mass);
 	a.velocity.copy(aMomentum);
 	
-	// Destroy the object
-	scene.remove(b.traceLine);
+	// Remove the object from the scene and mark it as 'dead' for physics purposes
+	b.velocity.copy(zero);
+	b.acceleration.copy(zero);
+	b.gravity.copy(zero);
+	b.spin.copy(zero);
+	b.mass = 0;
+	b.traceLine.geometry.mergeVertices();
+	b.dead = true;
 	scene.remove(b);
-	var index = physArray.indexOf(b);
-	physDeadArray.push(physArray.indexOf(b));
-	physArray.splice(index, 1);
 	if ( DEBUG ) console.debug(b.name+" collided with "+a.name);
 		
 }
 
 //// LINES ////
-function drawLine(a){
-	var tmp = new THREE.Vector3;
+function drawLine ( a ){
 	tmp.subVectors(a.position, a.traceLine.geometry.vertices[traceLength-2]);
 	if(tmp.lengthSq() > traceInterval){
 		// Delete first element
@@ -209,6 +234,14 @@ function drawLine(a){
     	a.traceLine.geometry.verticesNeedUpdate = true;
     }
     	
+}
+
+function eraseLine( a ){
+		for ( var i=0; i < 10; i ++ ){
+			a.traceLine.geometry.vertices.push(a.traceLine.geometry.vertices.shift());
+	    	a.traceLine.geometry.vertices[traceLength-1].copy(a.position); 
+    	}
+    	a.traceLine.geometry.verticesNeedUpdate = true;
 }
 
 //// Utilities ////
@@ -263,7 +296,7 @@ var vis = (function(){
     return function(c) {
         if (c) document.addEventListener(eventKey, c);
         return !document[stateKey];
-    }
+    };
 })();
 
 function focusChange(){
