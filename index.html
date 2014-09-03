@@ -26,6 +26,20 @@
 <!-- Interface -->
 <script src='js/UI.js'></script>
 
+
+<script src="js/shaders/CopyShader.js"></script>
+<script src="js/shaders/DotScreenShader.js"></script>
+<script src="js/shaders/RGBShiftShader.js"></script>
+<script src="js/shaders/DigitalGlitch.js"></script>
+
+<script src="js/postprocessing/EffectComposer.js"></script>
+<script src="js/postprocessing/RenderPass.js"></script>
+<script src="js/postprocessing/MaskPass.js"></script>
+<script src="js/postprocessing/ShaderPass.js"></script>
+<script src="js/postprocessing/GlitchPass.js"></script>
+
+
+
 </head>
 
 <script>
@@ -86,7 +100,7 @@
         camera = new THREE.PerspectiveCamera( FOV, window.innerWidth / window.innerHeight, 1, 1e50 );
         camera.position.z = 150000;
         
-        camera2 = new THREE.PerspectiveCamera( 20, 1, 1, 1e50 );
+        camera2 = new THREE.PerspectiveCamera( 20, 1, 1, 1000 );
 		
 		//// MATERIALS ////
 			material 	= new THREE.MeshBasicMaterial	( { color: 0x19FF19, wireframe: true } );	
@@ -116,6 +130,9 @@
 		var light = new THREE.PointLight( 0xff0000, 1, 0 ); 
 		light.position.copy( sun.position ); 
 		scene.add( light );
+		
+		// Ambient
+		scene.add( new THREE.AmbientLight( 0x050505 ) );
 		
 		// Add the stars
 		addStars();
@@ -187,7 +204,16 @@
 		controls.damping = 0.2;
 		controls.addEventListener( 'change', render );
 		controls.maxDistance = 1e7;
-        
+		
+		//// POSTPROCESSING ////
+		composer = new THREE.EffectComposer( renderer );
+		composer.addPass( new THREE.RenderPass( scene, camera2 ) );
+
+		glitchPass = new THREE.GlitchPass();
+		glitchPass.renderToScreen = true;
+		composer.addPass( glitchPass );
+
+		
         //// LISTENERS ////
         // Dynamic window resizing
         window.addEventListener( 'resize', onWindowResize, false );
@@ -212,7 +238,7 @@
 		
 		// Looping animation
         requestAnimationFrame( animate );
-		
+        
 		// Render the scene
         render();
         stats.update();
@@ -231,7 +257,8 @@
     	renderer.setViewport( 0, 0, 200, 200 );
     	renderer.setScissor( 0, 0, 200, 200 );
     	renderer.enableScissorTest ( true );
-    	renderer.render( scene, camera2 );
+    	composer.render();
+    	//renderer.render( scene, camera2 );
     }
     
 </script>
