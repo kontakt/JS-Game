@@ -216,3 +216,4 @@ pip-log.txt
 *.coffee
 mimosa-config.js
 .mimosa/require/tracking.json
+*.komodoproject
